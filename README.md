@@ -1,30 +1,24 @@
 # Pencils
-Pencils Bot Documentation v3.0:
+Pencils Bot Documentation v4.0:
 
-## Warning
-This bot should not be released outside of a particular server. Due to the lack of databasing and cross-server settings exchanging, the code here should only be used for bots that monitor 1 server.
+![Image of Yaktocat](https://i.imgur.com/lZLjje0.png)
+
 ## About 
-Pencils is a multipurpose bot meant to provide servers (specifically IEatPencils) with:
- - Music (Check future changes)
- - Administrative actions (Check future changes)
- - Custom Text editing
- - News and Youtube support
- - and more.
+The IEatPencils multipurpose bot
+
+## Updates
+Hypixel API is now supported!
 
 ## Future changes 
  - Add more custom text changes
- - ?Merge queue into play | Allow play to run audio on first command and queue up songs
- - ?Change view to new name "queue"
- - ?Allow for playlist support
- - ?Allow for spotify support
  - Add image modifications
+ - Add support for other games APIs
 
 ## Note
-Though the future of the bot is uncertain, the bot will likely stay privately on the IEatPencils server but will remain open source.
+The bot is publicly available on the Repl.it website so might as well give this an MIT license
 
-## Author's words
-The database system on Repl.it isn't the largest so making the bot private seems to be the best option.
-#### v3.0
-###### Date of change: 7/30/2021
+### Bot is heavily in development and features are missing/incomplete
+#### v4.0
+###### Date of change: 8/6/2021
 
 

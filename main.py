@@ -236,14 +236,14 @@ async def hypixel(ctx, specify, player_name=None):
             # Mega Walls
             if 'Walls3' in hypixel_data['player']['stats']:
               mw_coin = str(hypixel_data['player']['stats']['Walls3']['coins']) if 'coins' in hypixel_data['player']['stats']['Walls3'] else '0'
-              tot_kills = str(hypixel_data['player']['stats']['Walls3']['total_kills']) if 'total_kills' in hypixel_data['player']['stats']['Walls3'] else '0'
-              tot_fn = str(hypixel_data['player']['stats']['Walls3']['total_final_kills']) if 'total_final_kills' in hypixel_data['player']['stats']['Walls3'] else '0'
+              tot_kills = str(hypixel_data['player']['stats']['Walls3']['kills']) if 'kills' in hypixel_data['player']['stats']['Walls3'] else '0'
+              tot_fn = str(hypixel_data['player']['stats']['Walls3']['final_kills']) if 'final_kills' in hypixel_data['player']['stats']['Walls3'] else '0'
               mw_wins = str(hypixel_data['player']['stats']['Walls3']['wins']) if 'wins' in hypixel_data['player']['stats']['Walls3'] else '0'
               stats_embed.add_field(name='**Mega Walls**',value='Coins: ' + mw_coin + '\nLifetime Kills: ' + tot_kills + '\nLifetime Final Kills: ' + tot_fn + '\nLifetime Wins: '+ mw_wins,inline=True)
             else:
               stats_embed.add_field(name='**Mega Walls**',value='No Mega Walls data!',inline=True)
 
-            # UHC Champs
+            # Build Battle
             if 'BuildBattle' in hypixel_data['player']['stats']:
               bb_score = str(hypixel_data['player']['stats']['BuildBattle']['score']) if 'score' in hypixel_data['player']['stats']['BuildBattle'] else '0'
               bb_coins = str(hypixel_data['player']['stats']['BuildBattle']['coins']) if 'coins' in hypixel_data['player']['stats']['BuildBattle'] else '0'
