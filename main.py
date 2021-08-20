@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands, tasks
 import os
 from ping import keep_alive
-import encrypt
+import encode
 import time
 import asyncio
 import manual
@@ -110,9 +110,13 @@ async def help(ctx):
   help_page.add_field(name='reverse', value = 'Sends user-inputted data backwards', inline=False)
   help_page.add_field(name='caesar', value = 'Sends user-inputted data encoded in a Caesar cipher with a shift of the user\'s choosing', inline=False)
   help_page.add_field(name=ad("Administrator commands"), value='Commands that required administrator permissions', inline=True)
-  help_page.add_field(name="spam", value="Spams a word the number of times and intervals the user wants | Warning: This command will prompt the user to answer 'Yes' or 'No' due to the latency delay it causes.")
-  help_page.add_field(name="disable", value="Will disable other administrator commands")
-  help_page.add_field(name="enable",value="Will enable any disabled administrator command")
+  help_page.add_field(name="spam", value="Spams a word the number of times and intervals the user wants | Warning: This command will prompt the user to answer 'Yes' or 'No' due to the latency delay it causes.", inline = False)
+  help_page.add_field(name="disable", value="Will disable other administrator commands", inline  = False)
+  help_page.add_field(name="enable",value="Will enable any disabled administrator command", inline = False)
+  help_page.add_field(name=ad("Hypixel Commands"), value = 'Commands used with Hypixel API', inline = True)
+  help_page.add_field(name="Note", value = "You must use the command '>hypixel' and specify the second parameter using these 'sub' commands", inline = False)
+  help_page.add_field(name="stats", value = "Sends the stats of the specified player. The name of the player must be officially registered on the Minecraft System", inline = False)
+  help_page.add_field(name="links", value = "Sends the links used in the development of this command | Currently not present", inline = False)
   
   await ctx.send(embed=help_page)
 
@@ -271,11 +275,11 @@ async def closure(ctx):
 
 @client.command(name='caesar')
 async def caesar(ctx, word, base):
-  await ctx.send("The word '" + word + "' with a shift of '" + base + "' is **" + encrypt.caesar_cipher(word, int(base))+"**")
+  await ctx.send("The word '" + word + "' with a shift of '" + base + "' is **" + encode.caesar_cipher(word, int(base))+"**")
 
 @client.command(name='sub')
 async def sub(ctx, word, substitute, specify):
-  await ctx.send("New word: **"+ encrypt.substitution(word,substitute,specify)+"**")
+  await ctx.send("New word: **"+ encode.substitution(word,substitute,specify)+"**")
 
 @client.command(name='spam')
 async def spam(ctx, phrase, amount, speed):
@@ -303,11 +307,11 @@ async def error_spam(ctx, error):
 
 @client.command(name='binary')
 async def binary(ctx, number):
-  await ctx.send("Binary number: **" + encrypt.binary(int(number))+"**")
+  await ctx.send("Binary number: **" + encode.binary(int(number))+"**")
 
 @client.command(name='hexa')
 async def hexa(ctx, number):
-  await ctx.send("Hexadecimal number: **" +encrypt.hexadecimal(number)+"**")
+  await ctx.send("Hexadecimal number: **" +encode.hexadecimal(number)+"**")
 
 @client.command(name='ping')
 async def ping(ctx):
