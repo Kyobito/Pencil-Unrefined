@@ -36,16 +36,13 @@ async def on_ready():
   print('{0.user} is ready'.format(client))
 
 def ad(phrase):
-  title = ''
-  for fquote in range(0,2):
-    title+='*'
+  title = '**'
   for first in range(0,math.floor((36-len(phrase))/2) if isinstance(len(phrase)/2, float) else (36-len(phrase))/2):
     title+='-'
   title+=phrase
   for last in range(0,math.ceil((36-len(phrase))/2) if isinstance(len(phrase)/2, float) else (36-len(phrase))/2):
     title+='-'
-  for fquote in range(0,2):
-    title+='*'
+  title+='**'
   return title
 
 def cut(phrase):

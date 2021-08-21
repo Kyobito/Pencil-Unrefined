@@ -73,3 +73,11 @@ def bedexp_to_level(xp):
 
 # Source: https://hypixel.net/threads/calculate-bedwars-level-from-exp-javascript.2022078/
 # Name: KAD7 (Python redone)
+
+def base_finder(base):
+  abs_base = abs(base)
+  while abs_base >= 26:
+    abs_base-=26
+  if base < 0:
+    abs_base-=abs_base*2
+  return abs_base  

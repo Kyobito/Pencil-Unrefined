@@ -1,21 +1,26 @@
+import calc
+
 def caesar_cipher(word, base):
   up_alpha = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
   low_alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
   new_word = ''
+  base = base if abs(base) <= 26 else calc.base_finder(base)
   for letter in word:
     if letter.isnumeric() == True or letter.isalpha()==False:
       new_word += letter
-    elif letter.isupper == True:
+    elif letter.isupper() == True:
       try:
         new_word += up_alpha[up_alpha.index(letter)+base]
       except IndexError:
-        difference = (len(up_alpha)-1)-up_alpha.index(letter)
+        difference = (up_alpha.index(letter)+base) - 26
+        print(difference)
         new_word += up_alpha[difference]
     else:
         try:
           new_word += low_alpha[low_alpha.index(letter)+base]
         except IndexError:
-          difference_low = (len(low_alpha)-1)-low_alpha.index(letter)
+          difference_low = (low_alpha.index(letter)+base) - 26
+          print(difference_low)
           new_word += low_alpha[difference_low]
             
   return new_word
