@@ -1,7 +1,7 @@
 # Pencils
 Pencils Bot Documentation v4.0:
 
-![Image of Yaktocat](https://i.imgur.com/lZLjje0.png)
+![Image of Pencils Logo](https://i.imgur.com/lZLjje0.png)
 
 ## About 
 The IEatPencils multipurpose bot
