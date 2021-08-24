@@ -12,11 +12,18 @@ import calc
 from datetime import datetime, timedelta
 from pytz import timezone
 import pytz
+import help_user
+from replit import db
+
 
 from random import choice
 
 #---------------------------------------
-client = commands.Bot(command_prefix='>', help_command=None)
+# Intents
+intents = discord.Intents.default()
+intents.members = True
+#---------------------------------------
+client = commands.Bot(command_prefix='>', help_command=None, intents=intents)
 #---------------------------------------
 # Basic Commands
 
@@ -27,6 +34,10 @@ welcome = ['Howdy!','Hello!','Hi!','Aloha!']
 embed_color = discord.Color.blue()
 
 perm_warning = "You do not have proper permissions"
+
+curse_list = ['fuck','shit','dumbass']
+
+curse_replies = ["Watch your mouth you animal", "Don't say that!", "That's a no-no word"]
 
 h_bool = False
 
@@ -89,33 +100,39 @@ def cdtchange(date,time): # Time is received in 00:00:00 in military time | date
     central = timezone('America/Chicago')
     cst_dt = loc_dt.astimezone(central)
     return cst_dt.strftime('%Y-%m-%d %H:%M:%S %Z')
+#---------------------------------------
+# Events
+@client.event
+async def on_member_join(member):
+  join_channel = os.environ['JOIN_CHANNEL_ID']
+  channel = client.get_channel(int(join_channel))
+  await channel.send(f'{member.mention} has joined the server. Say hello!')
+
+@client.event
+async def on_member_remove(member):
+  join_channel = os.environ['JOIN_CHANNEL_ID']
+  channel = client.get_channel(int(join_channel))
+  await channel.send(f'{member.mention} has left the server...')
+
+@client.event
+async def on_message_delete(message):
+  db["last"] = message.content
+  db["last_author"] = message.author.mention
+
+#---------------------------------------
+# Listeners
+@client.listen('on_message')
+async def curse(ctx):
+  current_channel = ctx.channel
+  for i in curse_list:
+    if i in ctx.content.lower():
+      await current_channel.send(f'{ctx.author.mention} ' +choice(curse_replies))
 
 #---------------------------------------
 @client.command(name='help')
-async def help(ctx):
-  print("'Help' command initiated")
-  help_page = discord.Embed(title='Help Page', description ='\n',color = embed_color)
-  help_page.add_field(name=ad("Basic Commands"),value='Every day commands',inline=True)
-  help_page.add_field(name='ping', value = 'Returns bot-command latency', inline=False)
-  help_page.add_field(name='hello', value = 'Sends a greeting', inline=False)
-  help_page.add_field(name='about', value = 'Sends information regarding the bot', inline=False)
-  help_page.add_field(name='man', value = 'Sends syntax of a specified command', inline=False)
-  help_page.add_field(name='hiatus', value = 'Sends info. about bot\'s status', inline=False)
-  help_page.add_field(name=ad("Text Altering"),value='Commands that change text format',inline=True)
-  help_page.add_field(name='custom', value = 'Sends user-inputted text back', inline=False)
-  help_page.add_field(name='announce', value = 'Sends user-inputted data in embedded form', inline=False)
-  help_page.add_field(name='reverse', value = 'Sends user-inputted data backwards', inline=False)
-  help_page.add_field(name='caesar', value = 'Sends user-inputted data encoded in a Caesar cipher with a shift of the user\'s choosing', inline=False)
-  help_page.add_field(name=ad("Administrator commands"), value='Commands that required administrator permissions', inline=True)
-  help_page.add_field(name="spam", value="Spams a word the number of times and intervals the user wants | Warning: This command will prompt the user to answer 'Yes' or 'No' due to the latency delay it causes.", inline = False)
-  help_page.add_field(name="disable", value="Will disable other administrator commands", inline  = False)
-  help_page.add_field(name="enable",value="Will enable any disabled administrator command", inline = False)
-  help_page.add_field(name=ad("Hypixel Commands"), value = 'Commands used with Hypixel API', inline = True)
-  help_page.add_field(name="Note", value = "You must use the command '>hypixel' and specify the second parameter using these 'sub' commands", inline = False)
-  help_page.add_field(name="stats", value = "Sends the stats of the specified player. The name of the player must be officially registered on the Minecraft System", inline = False)
-  help_page.add_field(name="links", value = "Sends the links used in the development of this command | Currently not present", inline = False)
-  
-  await ctx.send(embed=help_page)
+async def help2(ctx):
+  global embed_color
+  await ctx.send(embed=help_user.helper(embed_color))
 
 @client.command(name='hypixel')
 async def hypixel(ctx, specify, player_name=None):
@@ -302,6 +319,19 @@ async def error_spam(ctx, error):
   if isinstance(error, commands.DisabledCommand):
     await ctx.send("This command is disabled")
 
+@client.command(name='purge')
+async def purge(ctx, amount):
+  if ctx.author.guild_permissions.administrator:
+    await ctx.channel.purge(limit=int(amount))
+    await ctx.send(amount + " messages were purged by " + f'{ctx.author.mention}')
+  else:
+    await ctx.send("You do not have proper permissions!")
+
+@purge.error
+async def error_purge(ctx, error):
+  if isinstance(error, commands.DisabledCommand):
+    await ctx.send("This command is disabled")
+
 @client.command(name='binary')
 async def binary(ctx, number):
   await ctx.send("Binary number: **" + encode.binary(int(number))+"**")
@@ -373,6 +403,10 @@ async def disable(ctx, specify):
       cmd = client.get_command('spam')
       cmd.update(enabled=False)
       await ctx.send("Command has been disabled")
+    if specify == 'purge':
+      cmd = client.get_command('purge')
+      cmd.update(enabled=False)
+      await ctx.send("Command has been disabled")
   else:
     await ctx.send(perm_warning)
 
@@ -383,8 +417,19 @@ async def enable(ctx, specify):
       cmd = client.get_command('spam')
       cmd.update(enabled=True)
       await ctx.send("Command has been enabled")
+    if specify == 'purge':
+      cmd = client.get_command('purge')
+      cmd.update(enabled=True)
+      await ctx.send("Command has been enabled")
   else:
     await ctx.send(perm_warning)
+
+@client.command(name='snipe')
+async def snipe(ctx):
+  last_deleted = db["last"]
+  last_deleted_author = db["last_author"]
+  if not any(i in last_deleted for i in curse_list):
+    await ctx.send(last_deleted_author+ ": "+last_deleted)
 #--------------------------------------
 keep_alive()
 client.run(os.getenv('TOKEN'))
