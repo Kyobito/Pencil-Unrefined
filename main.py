@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands, tasks
 import os
 from ping import keep_alive
-import encode
 import time
 import asyncio
 import manual
@@ -14,7 +13,7 @@ from pytz import timezone
 import pytz
 import help_user
 from replit import db
-
+import sched
 
 from random import choice
 
@@ -35,7 +34,7 @@ embed_color = discord.Color.blue()
 
 perm_warning = "You do not have proper permissions"
 
-curse_list = ['fuck','shit','dumbass']
+curse_list = ['fuck','shit','dumbass','@everyone','@here']
 
 curse_replies = ["Watch your mouth you animal", "Don't say that!", "That's a no-no word"]
 
@@ -43,7 +42,7 @@ h_bool = False
 
 @client.event
 async def on_ready():
-  await client.change_presence(activity=discord.Game(">help | On hiatus"))
+  await client.change_presence(activity=discord.Game(">help | In dev"))
   print('{0.user} is ready'.format(client))
 
 def ad(phrase):
@@ -83,7 +82,7 @@ def shave(num):
 
 hak = os.environ['HYPIXEL_API_KEY']
 
-def cdtchange(date,time): # Time is received in 00:00:00 in military time | date are received XXXX-XX-XX with mid XX being month
+def cdtchange(date,time):
     apart = time.split(':')
     hours = int(apart[0])
     minutes = int(apart[1])
@@ -118,15 +117,6 @@ async def on_member_remove(member):
 async def on_message_delete(message):
   db["last"] = message.content
   db["last_author"] = message.author.mention
-
-#---------------------------------------
-# Listeners
-@client.listen('on_message')
-async def curse(ctx):
-  current_channel = ctx.channel
-  for i in curse_list:
-    if i in ctx.content.lower():
-      await current_channel.send(f'{ctx.author.mention} ' +choice(curse_replies))
 
 #---------------------------------------
 @client.command(name='help')
@@ -284,40 +274,13 @@ async def suggest(ctx, words):
   await channel.send(words)
 
 @client.command(name='closure')
-async def closure(ctx):
-  await ctx.send('This channel is marked for closure. Channel will be put in archived if no messages are sent in the next 2 weeks')
-
-@client.command(name='caesar')
-async def caesar(ctx, word, base):
-  await ctx.send("The word '" + word + "' with a shift of '" + base + "' is **" + encode.caesar_cipher(word, int(base))+"**")
-
-@client.command(name='sub')
-async def sub(ctx, word, substitute, specify):
-  await ctx.send("New word: **"+ encode.substitution(word,substitute,specify)+"**")
-
-@client.command(name='spam')
-async def spam(ctx, phrase, amount, speed):
-  if ctx.author.guild_permissions.administrator:
-    await ctx.send("Are you sure you want to do this? [y/n]")
-    def check(prompt):
-      return (prompt.content.lower() in ['y','n']) and (prompt.author == ctx.author)
-    try:
-      msg= await client.wait_for('message',check=check,timeout=10.0)
-      if msg.content.lower() == "y":
-        for i in range(int(amount)):
-          time.sleep(float(speed))
-          await ctx.send(phrase)
-      elif msg.content.lower() == "n":
-        await ctx.send("Shutting down...")
-    except asyncio.TimeoutError:
-      await ctx.send("You did not enter anything!")
+async def closure(ctx, reason=None):
+  if reason == None:
+    await ctx.send('Please give a reason!')
   else:
-    await ctx.send("You do not have proper permissions!")
-
-@spam.error
-async def error_spam(ctx, error):
-  if isinstance(error, commands.DisabledCommand):
-    await ctx.send("This command is disabled")
+    await ctx.send('This channel is marked for closure. Channel will be put in archived if no messages are sent in the next 2 weeks' + reason)
+  time.sleep(5)
+  await ctx.message.delete()
 
 @client.command(name='purge')
 async def purge(ctx, amount):
@@ -332,24 +295,12 @@ async def error_purge(ctx, error):
   if isinstance(error, commands.DisabledCommand):
     await ctx.send("This command is disabled")
 
-@client.command(name='binary')
-async def binary(ctx, number):
-  await ctx.send("Binary number: **" + encode.binary(int(number))+"**")
-
-@client.command(name='hexa')
-async def hexa(ctx, number):
-  await ctx.send("Hexadecimal number: **" +encode.hexadecimal(number)+"**")
-
 @client.command(name='ping')
 async def ping(ctx):
   print("'Ping' command initiated")
   ping_page = discord.Embed(title='', description=f' **Latency: {round(client.latency * 1000)}ms**', color=embed_color)
   await ctx.send(embed=ping_page)
 
-@client.command(name='hello')
-async def hello(ctx):
-  print("'Hello' command initiated")
-  await ctx.send(choice(welcome))
   
 @client.command(name='custom')
 async def custom(ctx, *, printer=None):
@@ -390,19 +341,14 @@ async def announce(ctx, announce_title, announce_description, url_input=None):
 async def man(ctx, specify):
   print("'Man' command initiated")
   await ctx.send(manual.syntax(specify))
-    
-@client.command(name='reverse')
-async def reverse(ctx, line):
-  print("'Reverse' command initiated")
-  await ctx.send(line[::-1])
 
 @client.command(name='disable')
 async def disable(ctx, specify):
   if ctx.author.guild_permissions.administrator:
-    if specify == 'spam':
+    '''if specify == 'spam':
       cmd = client.get_command('spam')
       cmd.update(enabled=False)
-      await ctx.send("Command has been disabled")
+      await ctx.send("Command has been disabled")'''
     if specify == 'purge':
       cmd = client.get_command('purge')
       cmd.update(enabled=False)
@@ -413,10 +359,10 @@ async def disable(ctx, specify):
 @client.command(name='enable')
 async def enable(ctx, specify):
   if ctx.author.guild_permissions.administrator:
-    if specify == 'spam':
+    '''if specify == 'spam':
       cmd = client.get_command('spam')
       cmd.update(enabled=True)
-      await ctx.send("Command has been enabled")
+      await ctx.send("Command has been enabled")'''
     if specify == 'purge':
       cmd = client.get_command('purge')
       cmd.update(enabled=True)
@@ -430,6 +376,65 @@ async def snipe(ctx):
   last_deleted_author = db["last_author"]
   if not any(i in last_deleted for i in curse_list):
     await ctx.send(last_deleted_author+ ": "+last_deleted)
+  else:
+    await ctx.send('The message had a blacklisted word!')
+
+#Go to calendar.py and copy and paste code back here if you wish
+
+@client.command(name='pfp')
+async def pfp(ctx, persona:discord.User = None):
+  iep = client.get_guild(int(os.getenv('IEP_SERVER_ID'))) #IEP exclusive command
+  if iep.get_member(persona.id if persona is not None else None) is not None:
+    await ctx.send(persona.avatar_url)
+  elif persona is None:
+    await ctx.send(ctx.author.avatar_url)
+  
+@pfp.error
+async def pfp_error(ctx, error):
+  if isinstance(error, discord.ext.commands.errors.UserNotFound):
+    await ctx.send('This user does not exist!')
+
+@client.command(name='flip')
+async def flip(ctx):
+  num_list = [1,2]
+  chosen = choice(num_list)
+  if chosen == 1:
+    await ctx.send("You got **Heads!**")
+  elif chosen == 2:
+    await ctx.send("You got **Tails!**")
+  else:
+    await ctx.send("Something went wrong...")
+
+@client.command(name='roll')
+async def roll(ctx):
+  num_list = [1,2,3,4,5,6]
+  chosen = choice(num_list)
+  await ctx.send("You rolled **" + str(chosen) + '**')
+
+@client.command(name='valorant')
+async def valorant(ctx, specify):
+  if specify == 'map':
+    map_list = ['Fracture','Bind','Breeze','Split','Icebox','Haven','Ascent']
+    chosen = choice(map_list)
+    await ctx.send("Your map is **" + chosen + '**')
+  elif specify == 'agent':
+    agent_list = ['Sage','Jett','Brimstone','Astra','Phoenix','Omen','KAY/O','Viper','Yoru','Skye','Killjoy','Reyna','Sova','Cypher','Breach','Raze']
+    chosen = choice(agent_list)
+    await ctx.send("Your agent is **" + chosen + '**')
+  else:
+    await ctx.send("That command doesn't exist!")
+
+@client.command(name='ding')
+async def ding(ctx, specify):
+  iep = client.get_guild(int(os.getenv('IEP_SERVER_ID')))
+  if specify == "valorant":
+    valorant = iep.get_role(int(os.getenv('VALORANT_ROLE_ID')))
+    if iep.get_role(valorant.id if valorant.id is not None else None) is not None:
+      await ctx.send(valorant.mention)
+  elif specify == "testing":
+    testing = iep.get_role(int(os.getenv('TESTING_ROLE_ID')))
+    if iep.get_role(testing.id if testing.id is not None else None) is not None:
+      await ctx.send(testing.mention)
 #--------------------------------------
 keep_alive()
 client.run(os.getenv('TOKEN'))
