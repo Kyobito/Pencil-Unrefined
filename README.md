@@ -1,5 +1,5 @@
 # Pencils
-Pencils Bot Documentation v4.0:
+Pencils Bot Documentation v6.0:
 
 ![Image of Pencils Logo](https://i.imgur.com/lZLjje0.png)
 
@@ -7,18 +7,18 @@ Pencils Bot Documentation v4.0:
 The IEatPencils multipurpose bot
 
 ## Updates
-Hypixel API is now supported!
+Main.py has been gleaned -> gleaned commands moved to deprecated.py
 
-## Future changes 
- - Add more custom text changes
- - Add image modifications
- - Add support for other games APIs
+**Will no longer receive major updates**
+
+## APIs
+- Imgur API
+- Hypixel API
 
 ## Note
-The bot is publicly available on the Repl.it website so might as well give this an MIT license
+Available on Repl.it and has MIT license
 
-### Bot is heavily in development and features are missing/incomplete
-#### v4.0
-###### Date of change: 8/6/2021
+#### v6.0
+###### Date of change: 2/6/2022
 
 

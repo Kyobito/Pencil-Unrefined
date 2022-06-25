@@ -27,7 +27,7 @@ def caesar_cipher(word, base):
 
 def substitution(word, substitute, specify): #proto
   char_list = list(substitute)
-  new_word = ''
+  new_word =''
   counter = 0
   if len(substitute) != len(specify):
     return "Second and third arguments were not entered correctly"
