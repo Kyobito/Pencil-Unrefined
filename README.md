@@ -9,6 +9,8 @@ The IEatPencils multipurpose bot
 ## Updates
 Main.py has been gleaned -> gleaned commands moved to deprecated.py
 
+**Will no longer receive major updates**
+
 ## APIs
 - Imgur API
 - Hypixel API

@@ -42,7 +42,7 @@ h_bool = False
 
 @client.event
 async def on_ready():
-  await client.change_presence(activity=discord.Game(">help | In dev"))
+  await client.change_presence(activity=discord.Game(">help"))
   print('{0.user} is ready'.format(client))
 
 def ad(phrase):
@@ -274,11 +274,8 @@ async def suggest(ctx, words):
   await channel.send(words)
 
 @client.command(name='closure')
-async def closure(ctx, reason=None):
-  if reason == None:
-    await ctx.send('Please give a reason!')
-  else:
-    await ctx.send('This channel is marked for closure. Channel will be put in archived if no messages are sent in the next 2 weeks' + reason)
+async def closure(ctx):
+  await ctx.send('This channel is marked for closure. Channel will be put in archived if no messages are sent in the next 2 weeks')
   time.sleep(5)
   await ctx.message.delete()
 
@@ -418,7 +415,7 @@ async def valorant(ctx, specify):
     chosen = choice(map_list)
     await ctx.send("Your map is **" + chosen + '**')
   elif specify == 'agent':
-    agent_list = ['Sage','Jett','Brimstone','Astra','Phoenix','Omen','KAY/O','Viper','Yoru','Skye','Killjoy','Reyna','Sova','Cypher','Breach','Raze']
+    agent_list = ['Sage','Jett','Brimstone','Astra','Phoenix','Omen','KAY/O','Viper','Yoru','Skye','Killjoy','Reyna','Sova','Cypher','Breach','Raze', 'Neon', 'Chamber']
     chosen = choice(agent_list)
     await ctx.send("Your agent is **" + chosen + '**')
   else:
