@@ -1,24 +1,28 @@
 # Pencils
-Pencils Bot Documentation v6.0:
+Pencils Bot Documentation v6.1:
 
-![Image of Pencils Logo](https://i.imgur.com/lZLjje0.png)
+<img src="https://i.imgur.com/lZLjje0.png" width=250 height=250>
 
 ## About 
-The IEatPencils multipurpose bot
+The IEatPencils's multipurpose Discord server bot
 
-## Updates
-Main.py has been gleaned -> gleaned commands moved to deprecated.py
+Developed using the discord.py API wrapper
 
-**Will no longer receive major updates**
-
-## APIs
+Built with custom commands and implements the following APIs:
 - Imgur API
 - Hypixel API
 
-## Note
-Available on Repl.it and has MIT license
+Created by [Jarpiano](https://jarpiano.github.io/)
 
-#### v6.0
-###### Date of change: 2/6/2022
+With contributions from Hypeplane
+
+## Updates
+**Will no longer receive major updates**
+
+## Repl
+Can be accessed through Repl or via the following [link](https://replit.com/@Kyobito/Pencil)
+
+#### v6.1
+###### Date of change: 12/12/2022
 
 
